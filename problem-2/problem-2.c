@@ -11,22 +11,22 @@ By considering the terms in the Fibonacci sequence whose values do not exceed fo
 #define MAX 4000000
 
 int main(void){
-  
-  int prev = 1;
-  int next = 2;
-  int solution = 0;
-  
-  for(int i = 0; next < MAX; i++){
+
+    int prev = 1;
+    int next = 2;
+    int solution = 0;
+
+    for(int i = 0; next < MAX; i++){
     printf("%d, ", prev);
     int nextAux = next;
     next = next + prev;
     prev = nextAux;
     if(prev % 2 == 0){
-      solution += prev;
+        solution += prev;
     }
-  }
-  printf("%d\n", prev);
-  printf("Solution: %d\n", solution);
-  
-  return 0;
+    }
+    printf("%d\n", prev);
+    printf("Solution: %d\n", solution);
+
+    return 0;
 }

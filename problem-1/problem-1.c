@@ -11,15 +11,15 @@ Find the sum of all the multiples of 3 or 5 below 1000.
 
 int main(void) {
 
-  int solution = 0;
+    int solution = 0;
 
-  for (int i = 0; i < MAX; i++){
+    for (int i = 0; i < MAX; i++){
     if(i % 3 == 0 || i % 5 == 0){
-      solution += i;
+        solution += i;
     }
-  }
+    }
 
-  printf("Solution: %d\n", solution);
+    printf("Solution: %d\n", solution);
 
-  return 0;
+    return 0;
 }
