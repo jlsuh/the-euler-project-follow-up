@@ -17,13 +17,13 @@ int main(void){
     int solution = 0;
 
     for(int i = 0; next < MAX; i++){
-    printf("%d, ", prev);
-    int nextAux = next;
-    next = next + prev;
-    prev = nextAux;
-    if(prev % 2 == 0){
-        solution += prev;
-    }
+        printf("%d, ", prev);
+        int nextAux = next;
+        next = next + prev;
+        prev = nextAux;
+        if(prev % 2 == 0){
+            solution += prev;
+        }
     }
     printf("%d\n", prev);
     printf("Solution: %d\n", solution);
