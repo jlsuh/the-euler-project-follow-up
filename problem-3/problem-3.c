@@ -7,31 +7,39 @@ What is the largest prime factor of the number 600851475143 ?
 
 #include <stdio.h>
 
-#define IS_PRIME 2
+#define IS_PRIME(x) (x == 2)
 
 int main(void){
     
-    long long TARGET = 600851475143;
-    long long largestPrimeFactor = 0;
-    int found = 0;
-    int primeChecker = 2;
-    int i = TARGET;
-    
-    while(!found){
-        for(int auxi = i/2; auxi >= 1; auxi = auxi / 2){
-            if(i % auxi == 0){
+    unsigned long long int TARGET = 600851475143;
+    int factor = 2;
+    int primeIndex = 0;
+
+    do{
+        factor++;
+        int primeChecker = 0;
+        int j = 1;
+        while(j <= factor){
+            if(factor % j == 0){
                 primeChecker++;
             }
+            j++;
         }
-        if(primeChecker == IS_PRIME && TARGET % i == 0){
-            found = 1;
-            largestPrimeFactor = i;
+        if(IS_PRIME(primeChecker)){
+            if(TARGET % factor == 0){
+                TARGET = TARGET / factor;
+                primeIndex++;
+            }
         }
-        i = i / 2;
-        primeChecker = 0;
-    }
-    
-    printf("Solution: %d\n", largestPrimeFactor);
+    }while(TARGET != 1);
 
+    printf("Solution: %llu\n", factor);
     return 0;
 }
+
+/*
+600851475143 / 71 = 8462696833
+8462696833 / 839 = 10086647
+10086647 / 1471 = 6857
+6857 / 6857 = 1
+*/
