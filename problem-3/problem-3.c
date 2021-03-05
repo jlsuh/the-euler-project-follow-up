@@ -12,7 +12,7 @@ What is the largest prime factor of the number 600851475143 ?
 int main(void){
     
     unsigned long long int TARGET = 600851475143;
-    int factor = 2;
+    int factor = 1;
     int primeIndex = 0;
 
     do{
