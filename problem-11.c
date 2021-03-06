@@ -65,6 +65,7 @@ void solve(char *matrix[DIM][DIM]);
 long vertical_solve(char *matrix[DIM][DIM]);
 long productorial(int matrix[ADJACENT], int dimention);
 long horizontal_solve(char *matrix[DIM][DIM]);
+// long northW_southE_solve(char *matrix[DIM][DIM]);
 
 int main(void){
     char *matrix[DIM][DIM] = {
@@ -98,11 +99,14 @@ int main(void){
 void solve(char *matrix[DIM][DIM]){
     printf("Result: %ld\n",vertical_solve(matrix));
     printf("Result: %ld\n",horizontal_solve(matrix));
+//     printf("Result: %ld\n",northW_southE_solve(matrix));
 }
 
+/*
 long northW_southE_solve(char *matrix[DIM][DIM]){
     //TODO
 }
+*/
 
 /*
 00  01  02  03
@@ -111,26 +115,28 @@ long northW_southE_solve(char *matrix[DIM][DIM]){
 30  31  32  33
 */
 
+/*
 long northE_southW_solve(char *matrix[DIM][DIM]){
     //TODO
 }
+*/
 
 long horizontal_solve(char *matrix[DIM][DIM]){
     long int greatest = 0;
     int aux[ADJACENT] = {};
-    int fila = 0;
+    int row = 0;
     int col = 0;
-    while(fila != DIM && col != DIM){
+    while(row != DIM && col != DIM){
         for(col = 0; col <= DIM-ADJACENT; col++){
             for(int i = 0; i < ADJACENT; i++){
-                aux[i] = *matrix[col][i+fila];
+                aux[i] = *matrix[col][i+row];
             }
             long currRes = productorial(aux, ADJACENT-1);
             if(currRes > greatest){
                 greatest = currRes;
             }
         }
-        fila++;
+        row++;
     }
     return greatest;
 }
