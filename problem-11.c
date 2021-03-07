@@ -30,8 +30,6 @@ What is the greatest product of four adjacent numbers in the same direction (up,
 */
 
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 
 #define DIM 20
 #define ADJACENT 4
@@ -74,10 +72,10 @@ int main(void){
 }
 
 void solve(int matrix[DIM][DIM]){
-    printf("Result: %ld\n",vertical_solve(matrix));
-    printf("Result: %ld\n",horizontal_solve(matrix));
-    printf("Result: %ld\n",northW_southE_solve(matrix));
-    printf("Result: %ld\n",northE_southW_solve(matrix));
+    printf("Vertical result: %ld\n",vertical_solve(matrix));
+    printf("Horizontal result: %ld\n",horizontal_solve(matrix));
+    printf("NorthW -> SouthE result: %ld\n",northW_southE_solve(matrix));
+    printf("NorthE -> SouthW result: %ld\n",northE_southW_solve(matrix));
 }
 
 long northW_southE_solve(int matrix[DIM][DIM]){
@@ -101,20 +99,20 @@ long northW_southE_solve(int matrix[DIM][DIM]){
                 row = 0;
             }
             candidates[i] = matrix[row][col];
-            //printf("Se carga posición: (%d, %d), con el valor: %d\n", row, col, matrix[row][col]);
+            //printf("Store in position: (%d, %d) | value: %d\n", row, col, matrix[row][col]);
             row++;
             col++;
             i++;
             iterationCount--;
         }
         long res = productorial(candidates, ADJACENT-1);
-        //printf("Resultado de esa diagonal: %ld\n", res);
+        //printf("Diagonal result: %ld\n", res);
         pivot[1]++;
         if(pivot[1] == DIM){
             pivot[0]++;
             pivot[1] = 0;
         }
-        //printf("Pivote es: (%d, %d)\n", pivot[0], pivot[1]);
+        //printf("Pivot is: (%d, %d)\n", pivot[0], pivot[1]);
         if(res > currentMax){
             currentMax = res;
         }
@@ -144,20 +142,57 @@ long northE_southW_solve(int matrix[DIM][DIM]){
                 row = 0;
             }
             candidates[i] = matrix[row][col];
-            //printf("Se carga posición: (%d, %d), con el valor: %d\n", row, col, matrix[row][col]);
+            //printf("Store in position: (%d, %d) | value: %d\n", row, col, matrix[row][col]);
             row++;
             col--;
             i++;
             iterationCount--;
         }
         long res = productorial(candidates, ADJACENT-1);
-        //printf("Resultado de esa diagonal: %ld\n", res);
+        //printf("Diagonal result: %ld\n", res);
         pivot[1]++;
         if(pivot[1] == DIM){
             pivot[0]++;
             pivot[1] = 0;
         }
-        //printf("Pivote es: (%d, %d)\n", pivot[0], pivot[1]);
+        //printf("Pivot is: (%d, %d)\n", pivot[0], pivot[1]);
+        if(res > currentMax){
+            currentMax = res;
+        }
+        iterationCount = ADJACENT;
+    }while(pivot[0] < DIM && pivot[1] < DIM);
+    return currentMax;
+}
+
+long horizontal_solve(int matrix[DIM][DIM]){
+    int candidates[ADJACENT] = {};
+    int pivot[2] = {0, 0};
+    int row = 0;
+    int col = 0;
+    int iterationCount = ADJACENT;
+    long currentMax = 0;
+    do{
+        row = pivot[0];
+        col = pivot[1];
+        int i = 0;
+        while(iterationCount > 0){
+            if(col == DIM){
+                col = 0;
+            }
+            candidates[i] = matrix[row][col];
+            //printf("Store in position: (%d, %d) | value: %d\n", row, col, matrix[row][col]);
+            col++;
+            i++;
+            iterationCount--;
+        }
+        long res = productorial(candidates, ADJACENT-1);
+        //printf("Diagonal result: %ld\n", res);
+        pivot[1]++;
+        if(pivot[1] == DIM){
+            pivot[1] = 0;
+            pivot[0]++;
+        }
+        //printf("Pivot is: (%d, %d)\n", pivot[0], pivot[1]);
         if(res > currentMax){
             currentMax = res;
         }
@@ -167,43 +202,40 @@ long northE_southW_solve(int matrix[DIM][DIM]){
 }
 
 long vertical_solve(int matrix[DIM][DIM]){
-    long int greatest = 0;
-    int aux[ADJACENT] = {};
-    int col = 0;
-    int row = 0;
-    while(col != DIM && row != DIM){
-        for(row = 0; row <= DIM-ADJACENT; row++){
-            for(int i = 0; i < ADJACENT; i++){
-                aux[i] = matrix[i+row][col];
-            }
-            long currRes = productorial(aux, ADJACENT-1);
-            if(currRes > greatest){
-                greatest = currRes;
-            }
-        }
-        col++;
-    }
-    return greatest;
-}
-
-long horizontal_solve(int matrix[DIM][DIM]){
-    long int greatest = 0;
-    int aux[ADJACENT] = {};
+    int candidates[ADJACENT] = {};
+    int pivot[2] = {0, 0};
     int row = 0;
     int col = 0;
-    while(row != DIM && col != DIM){
-        for(col = 0; col <= DIM-ADJACENT; col++){
-            for(int i = 0; i < ADJACENT; i++){
-                aux[i] = matrix[col][i+row];
+    int iterationCount = ADJACENT;
+    long currentMax = 0;
+    do{
+        row = pivot[0];
+        col = pivot[1];
+        int i = 0;
+        while(iterationCount > 0){
+            if(row == DIM){
+                row = 0;
             }
-            long currRes = productorial(aux, ADJACENT-1);
-            if(currRes > greatest){
-                greatest = currRes;
-            }
+            candidates[i] = matrix[row][col];
+            //printf("Store in position: (%d, %d) | value: %d\n", row, col, matrix[row][col]);
+            row++;
+            i++;
+            iterationCount--;
         }
-        row++;
-    }
-    return greatest;
+        long res = productorial(candidates, ADJACENT-1);
+        //printf("Diagonal result: %ld\n", res);
+        pivot[0]++;
+        if(pivot[0] == DIM){
+            pivot[0] = 0;
+            pivot[1]++;
+        }
+        //printf("Pivot is: (%d, %d)\n", pivot[0], pivot[1]);
+        if(res > currentMax){
+            currentMax = res;
+        }
+        iterationCount = ADJACENT;
+    }while(pivot[0] < DIM && pivot[1] < DIM);
+    return currentMax;
 }
 
 long productorial(int matrix[ADJACENT], int dimention){
@@ -225,6 +257,50 @@ void show_matrix(int matrix[DIM][DIM]){
 }
 
 /*
+long vertical_solve(int matrix[DIM][DIM]){
+    long int greatest = 0;
+    int aux[ADJACENT] = {};
+    int col = 0;
+    int row = 0;
+    while(col != DIM && row != DIM){
+        for(row = 0; row <= DIM-ADJACENT; row++){
+            for(int i = 0; i < ADJACENT; i++){
+                aux[i] = matrix[i+row][col];
+            }
+            long currRes = productorial(aux, ADJACENT-1);
+            if(currRes > greatest){
+                greatest = currRes;
+            }
+        }
+        col++;
+    }
+    return greatest;
+}
+*/
+
+/*
+long horizontal_solve(int matrix[DIM][DIM]){
+    long int greatest = 0;
+    int aux[ADJACENT] = {};
+    int row = 0;
+    int col = 0;
+    while(row != DIM && col != DIM){
+        for(col = 0; col <= DIM-ADJACENT; col++){
+            for(int i = 0; i < ADJACENT; i++){
+                aux[i] = matrix[col][i+row];
+            }
+            long currRes = productorial(aux, ADJACENT-1);
+            if(currRes > greatest){
+                greatest = currRes;
+            }
+        }
+        row++;
+    }
+    return greatest;
+}
+*/
+
+/*
 int charToInt(char aChar){
     return aChar - '0';
 }*/
@@ -240,6 +316,13 @@ void eliminate_invalid_zeros(int matrix[DIM][DIM]){
         }
     }
 }
+*/
+
+/*
+Vertical result: 51267216
+Horizontal result: 48477312
+NorthW -> SouthE result: 40304286
+NorthE -> SouthW result: 70600674
 */
 
 /*
