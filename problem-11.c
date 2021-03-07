@@ -29,29 +29,6 @@ The product of these numbers is 26 × 63 × 78 × 14 = 1788696.
 What is the greatest product of four adjacent numbers in the same direction (up, down, left, right, or diagonally) in the 20×20 grid?
 */
 
-/*
-08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08
-49 49 99 40 17 81 18 57 60 87 17 40 98 43 69 48 04 56 62 00
-81 49 31 73 55 79 14 29 93 71 40 67 53 88 30 03 49 13 36 65
-52 70 95 23 04 60 11 42 69 24 68 56 01 32 56 71 37 02 36 91
-22 31 16 71 51 67 63 89 41 92 36 54 22 40 40 28 66 33 13 80
-24 47 32 60 99 03 45 02 44 75 33 53 78 36 84 20 35 17 12 50
-32 98 81 28 64 23 67 10 26 38 40 67 59 54 70 66 18 38 64 70
-67 26 20 68 02 62 12 20 95 63 94 39 63 08 40 91 66 49 94 21
-24 55 58 05 66 73 99 26 97 17 78 78 96 83 14 88 34 89 63 72
-21 36 23 09 75 00 76 44 20 45 35 14 00 61 33 97 34 31 33 95
-78 17 53 28 22 75 31 67 15 94 03 80 04 62 16 14 09 53 56 92
-16 39 05 42 96 35 31 47 55 58 88 24 00 17 54 24 36 29 85 57
-86 56 00 48 35 71 89 07 05 44 44 37 44 60 21 58 51 54 17 58
-19 80 81 68 05 94 47 69 28 73 92 13 86 52 17 77 04 89 55 40
-04 52 08 83 97 35 99 16 07 97 57 32 16 26 26 79 33 27 98 66
-88 36 68 87 57 62 20 72 03 46 33 67 46 55 12 32 63 93 53 69
-04 42 16 73 38 25 39 11 24 94 72 18 08 46 29 32 40 62 76 36
-20 69 36 41 72 30 23 88 34 62 99 69 82 67 59 85 74 04 36 16
-20 73 35 29 78 31 90 01 74 31 49 71 48 86 81 16 23 57 05 54
-01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48
-*/
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -59,89 +36,137 @@ What is the greatest product of four adjacent numbers in the same direction (up,
 #define DIM 20
 #define ADJACENT 4
 
-void show_matrix(char *matrix[DIM][DIM]);
-void eliminate_invalid_zeros(char *matrix[DIM][DIM]);
-void solve(char *matrix[DIM][DIM]);
-long vertical_solve(char *matrix[DIM][DIM]);
+void solve(int matrix[DIM][DIM]);
+long northW_southE_solve(int matrix[DIM][DIM]);
+long northE_southW_solve(int matrix[DIM][DIM]);
+long horizontal_solve(int matrix[DIM][DIM]);
+long vertical_solve(int matrix[DIM][DIM]);
 long productorial(int matrix[ADJACENT], int dimention);
-long horizontal_solve(char *matrix[DIM][DIM]);
-// long northW_southE_solve(char *matrix[DIM][DIM]);
+void show_matrix(int matrix[DIM][DIM]);
 
 int main(void){
-    char *matrix[DIM][DIM] = {
-        {"08", "02", "22", "97", "38", "15", "00", "40", "00", "75", "04", "05", "07", "78", "52", "12", "50", "77", "91", "08"},
-        {"49", "49", "99", "40", "17", "81", "18", "57", "60", "87", "17", "40", "98", "43", "69", "48", "04", "56", "62", "00"},
-        {"81", "49", "31", "73", "55", "79", "14", "29", "93", "71", "40", "67", "53", "88", "30", "03", "49", "13", "36", "65"},
-        {"52", "70", "95", "23", "04", "60", "11", "42", "69", "24", "68", "56", "01", "32", "56", "71", "37", "02", "36", "91"},
-        {"22", "31", "16", "71", "51", "67", "63", "89", "41", "92", "36", "54", "22", "40", "40", "28", "66", "33", "13", "80"},
-        {"24", "47", "32", "60", "99", "03", "45", "02", "44", "75", "33", "53", "78", "36", "84", "20", "35", "17", "12", "50"},
-        {"32", "98", "81", "28", "64", "23", "67", "10", "26", "38", "40", "67", "59", "54", "70", "66", "18", "38", "64", "70"},
-        {"67", "26", "20", "68", "02", "62", "12", "20", "95", "63", "94", "39", "63", "08", "40", "91", "66", "49", "94", "21"},
-        {"24", "55", "58", "05", "66", "73", "99", "26", "97", "17", "78", "78", "96", "83", "14", "88", "34", "89", "63", "72"},
-        {"21", "36", "23", "09", "75", "00", "76", "44", "20", "45", "35", "14", "00", "61", "33", "97", "34", "31", "33", "95"},
-        {"78", "17", "53", "28", "22", "75", "31", "67", "15", "94", "03", "80", "04", "62", "16", "14", "09", "53", "56", "92"},
-        {"16", "39", "05", "42", "96", "35", "31", "47", "55", "58", "88", "24", "00", "17", "54", "24", "36", "29", "85", "57"},
-        {"86", "56", "00", "48", "35", "71", "89", "07", "05", "44", "44", "37", "44", "60", "21", "58", "51", "54", "17", "58"},
-        {"19", "80", "81", "68", "05", "94", "47", "69", "28", "73", "92", "13", "86", "52", "17", "77", "04", "89", "55", "40"},
-        {"04", "52", "08", "83", "97", "35", "99", "16", "07", "97", "57", "32", "16", "26", "26", "79", "33", "27", "98", "66"},
-        {"88", "36", "68", "87", "57", "62", "20", "72", "03", "46", "33", "67", "46", "55", "12", "32", "63", "93", "53", "69"},
-        {"04", "42", "16", "73", "38", "25", "39", "11", "24", "94", "72", "18", "08", "46", "29", "32", "40", "62", "76", "36"},
-        {"20", "69", "36", "41", "72", "30", "23", "88", "34", "62", "99", "69", "82", "67", "59", "85", "74", "04", "36", "16"},
-        {"20", "73", "35", "29", "78", "31", "90", "01", "74", "31", "49", "71", "48", "86", "81", "16", "23", "57", "05", "54"},
-        {"01", "70", "54", "71", "83", "51", "54", "69", "16", "92", "33", "48", "61", "43", "52", "01", "89", "19", "67", "48"},
+    int matrix[DIM][DIM] = {
+        {8,   2, 22, 97, 38, 15,  0, 40,  0, 75,  4,  5,  7, 78, 52, 12, 50, 77, 91,  8},
+        {49, 49, 99, 40, 17, 81, 18, 57, 60, 87, 17, 40, 98, 43, 69, 48,  4, 56, 62,  0},
+        {81, 49, 31, 73, 55, 79, 14, 29, 93, 71, 40, 67, 53, 88, 30,  3, 49, 13, 36, 65},
+        {52, 70, 95, 23,  4, 60, 11, 42, 69, 24, 68, 56,  1, 32, 56, 71, 37,  2, 36, 91},
+        {22, 31, 16, 71, 51, 67, 63, 89, 41, 92, 36, 54, 22, 40, 40, 28, 66, 33, 13, 80},
+        {24, 47, 32, 60, 99,  3, 45,  2, 44, 75, 33, 53, 78, 36, 84, 20, 35, 17, 12, 50},
+        {32, 98, 81, 28, 64, 23, 67, 10, 26, 38, 40, 67, 59, 54, 70, 66, 18, 38, 64, 70},
+        {67, 26, 20, 68,  2, 62, 12, 20, 95, 63, 94, 39, 63,  8, 40, 91, 66, 49, 94, 21},
+        {24, 55, 58,  5, 66, 73, 99, 26, 97, 17, 78, 78, 96, 83, 14, 88, 34, 89, 63, 72},
+        {21, 36, 23,  9, 75,  0, 76, 44, 20, 45, 35, 14,  0, 61, 33, 97, 34, 31, 33, 95},
+        {78, 17, 53, 28, 22, 75, 31, 67, 15, 94,  3, 80,  4, 62, 16, 14,  9, 53, 56, 92},
+        {16, 39,  5, 42, 96, 35, 31, 47, 55, 58, 88, 24,  0, 17, 54, 24, 36, 29, 85, 57},
+        {86, 56,  0, 48, 35, 71, 89,  7,  5, 44, 44, 37, 44, 60, 21, 58, 51, 54, 17, 58},
+        {19, 80, 81, 68,  5, 94, 47, 69, 28, 73, 92, 13, 86, 52, 17, 77,  4, 89, 55, 40},
+        { 4, 52,  8, 83, 97, 35, 99, 16,  7, 97, 57, 32, 16, 26, 26, 79, 33, 27, 98, 66},
+        {88, 36, 68, 87, 57, 62, 20, 72,  3, 46, 33, 67, 46, 55, 12, 32, 63, 93, 53, 69},
+        { 4, 42, 16, 73, 38, 25, 39, 11, 24, 94, 72, 18,  8, 46, 29, 32, 40, 62, 76, 36},
+        {20, 69, 36, 41, 72, 30, 23, 88, 34, 62, 99, 69, 82, 67, 59, 85, 74,  4, 36, 16},
+        {20, 73, 35, 29, 78, 31, 90,  1, 74, 31, 49, 71, 48, 86, 81, 16, 23, 57,  5, 54},
+        { 1, 70, 54, 71, 83, 51, 54, 69, 16, 92, 33, 48, 61, 43, 52,  1, 89, 19, 67, 48},
     };
-    eliminate_invalid_zeros(matrix);
+    //eliminate_invalid_zeros(matrix);
     show_matrix(matrix);
     solve(matrix);
     return 0;
 }
 
-void solve(char *matrix[DIM][DIM]){
+void solve(int matrix[DIM][DIM]){
     printf("Result: %ld\n",vertical_solve(matrix));
     printf("Result: %ld\n",horizontal_solve(matrix));
-//     printf("Result: %ld\n",northW_southE_solve(matrix));
+    printf("Result: %ld\n",northW_southE_solve(matrix));
+    printf("Result: %ld\n",northE_southW_solve(matrix));
 }
 
-/*
-long northW_southE_solve(char *matrix[DIM][DIM]){
-    //TODO
-}
-*/
-
-/*
-00  01  02  03
-10  11  12  13
-20  21  22  23
-30  31  32  33
-*/
-
-/*
-long northE_southW_solve(char *matrix[DIM][DIM]){
-    //TODO
-}
-*/
-
-long horizontal_solve(char *matrix[DIM][DIM]){
-    long int greatest = 0;
-    int aux[ADJACENT] = {};
+long northW_southE_solve(int matrix[DIM][DIM]){
+    int candidates[ADJACENT] = {};
+    int pivot[2] = {0, 0};
     int row = 0;
     int col = 0;
-    while(row != DIM && col != DIM){
-        for(col = 0; col <= DIM-ADJACENT; col++){
-            for(int i = 0; i < ADJACENT; i++){
-                aux[i] = *matrix[col][i+row];
+    int iterationCount = ADJACENT;
+    long currentMax = 0;
+    do{
+        row = pivot[0];
+        col = pivot[1];
+        int i = 0;
+        while(iterationCount > 0){
+            if(col == DIM && row != DIM){
+                col = 0;
+            } else if(col != DIM && row == DIM){
+                row = 0;
+            } else if(col == DIM && row == DIM){
+                col = 0;
+                row = 0;
             }
-            long currRes = productorial(aux, ADJACENT-1);
-            if(currRes > greatest){
-                greatest = currRes;
-            }
+            candidates[i] = matrix[row][col];
+            //printf("Se carga posición: (%d, %d), con el valor: %d\n", row, col, matrix[row][col]);
+            row++;
+            col++;
+            i++;
+            iterationCount--;
         }
-        row++;
-    }
-    return greatest;
+        long res = productorial(candidates, ADJACENT-1);
+        //printf("Resultado de esa diagonal: %ld\n", res);
+        pivot[1]++;
+        if(pivot[1] == DIM){
+            pivot[0]++;
+            pivot[1] = 0;
+        }
+        //printf("Pivote es: (%d, %d)\n", pivot[0], pivot[1]);
+        if(res > currentMax){
+            currentMax = res;
+        }
+        iterationCount = ADJACENT;
+    }while(pivot[0] < DIM && pivot[1] < DIM);
+    return currentMax;
 }
 
-long vertical_solve(char *matrix[DIM][DIM]){
+long northE_southW_solve(int matrix[DIM][DIM]){
+    int candidates[ADJACENT] = {};
+    int pivot[2] = {0, 0};
+    int row = 0;
+    int col = 0;
+    int iterationCount = ADJACENT;
+    long currentMax = 0;
+    do{
+        row = pivot[0];
+        col = pivot[1];
+        int i = 0;
+        while(iterationCount > 0){
+            if(col == -1 && row != DIM){
+                col = DIM-1;
+            } else if(col != -1 && row == DIM){
+                row = 0;
+            } else if(col == -1 && row == DIM){
+                col = DIM-1;
+                row = 0;
+            }
+            candidates[i] = matrix[row][col];
+            //printf("Se carga posición: (%d, %d), con el valor: %d\n", row, col, matrix[row][col]);
+            row++;
+            col--;
+            i++;
+            iterationCount--;
+        }
+        long res = productorial(candidates, ADJACENT-1);
+        //printf("Resultado de esa diagonal: %ld\n", res);
+        pivot[1]++;
+        if(pivot[1] == DIM){
+            pivot[0]++;
+            pivot[1] = 0;
+        }
+        //printf("Pivote es: (%d, %d)\n", pivot[0], pivot[1]);
+        if(res > currentMax){
+            currentMax = res;
+        }
+        iterationCount = ADJACENT;
+    }while(pivot[0] < DIM && pivot[1] < DIM);
+    return currentMax;
+}
+
+long vertical_solve(int matrix[DIM][DIM]){
     long int greatest = 0;
     int aux[ADJACENT] = {};
     int col = 0;
@@ -149,7 +174,7 @@ long vertical_solve(char *matrix[DIM][DIM]){
     while(col != DIM && row != DIM){
         for(row = 0; row <= DIM-ADJACENT; row++){
             for(int i = 0; i < ADJACENT; i++){
-                aux[i] = *matrix[i+row][col];
+                aux[i] = matrix[i+row][col];
             }
             long currRes = productorial(aux, ADJACENT-1);
             if(currRes > greatest){
@@ -161,6 +186,26 @@ long vertical_solve(char *matrix[DIM][DIM]){
     return greatest;
 }
 
+long horizontal_solve(int matrix[DIM][DIM]){
+    long int greatest = 0;
+    int aux[ADJACENT] = {};
+    int row = 0;
+    int col = 0;
+    while(row != DIM && col != DIM){
+        for(col = 0; col <= DIM-ADJACENT; col++){
+            for(int i = 0; i < ADJACENT; i++){
+                aux[i] = matrix[col][i+row];
+            }
+            long currRes = productorial(aux, ADJACENT-1);
+            if(currRes > greatest){
+                greatest = currRes;
+            }
+        }
+        row++;
+    }
+    return greatest;
+}
+
 long productorial(int matrix[ADJACENT], int dimention){
     if(dimention < 0){
         return 1;
@@ -168,7 +213,24 @@ long productorial(int matrix[ADJACENT], int dimention){
     return matrix[dimention] * productorial(matrix, dimention-1);
 }
 
-void eliminate_invalid_zeros(char *matrix[DIM][DIM]){
+void show_matrix(int matrix[DIM][DIM]){
+    for(int row = 0; row < DIM; row++){
+        for(int col = 0; col < DIM; col++){
+            printf("%d\t", matrix[row][col]);
+            if(col == DIM-1){
+                printf("\n");
+            }
+        }
+    }
+}
+
+/*
+int charToInt(char aChar){
+    return aChar - '0';
+}*/
+
+/*
+void eliminate_invalid_zeros(int matrix[DIM][DIM]){
     for(int row = 0; row < DIM; row++){
         for(int col = 0; col < DIM; col++){
             // printf("%c\n", *matrix[row][col]);
@@ -178,17 +240,7 @@ void eliminate_invalid_zeros(char *matrix[DIM][DIM]){
         }
     }
 }
-
-void show_matrix(char *matrix[DIM][DIM]){
-    for(int row = 0; row < DIM; row++){
-        for(int col = 0; col < DIM; col++){
-            printf("%s\t", matrix[row][col]);
-            if(col == DIM-1){
-                printf("\n");
-            }
-        }
-    }
-}
+*/
 
 /*
     int matrix[DIM][DIM] = {
